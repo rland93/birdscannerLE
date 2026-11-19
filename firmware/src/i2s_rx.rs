@@ -6,10 +6,11 @@
 //! driver programs the peripheral directly and streams stereo frames into a
 //! ring of EasyDMA buffers.
 //!
-//! Clocking: MCK = 32 MHz / 16 = 2 MHz from PCLK32M, LRCK = MCK / 64 =
-//! 31 250 Hz, SCK = 64 × LRCK = 2 MHz. Integer dividers only, so no
-//! fractional-divider jitter, and both clocks sit inside the supported range
-//! of the common I2S MEMS microphones.
+//! Clocking: the audio PLL (HFCLKAUDIO, derived from the HFXO) runs at
+//! 12.288 MHz and feeds the I2S directly (CLKCONFIG.BYPASS), so MCK =
+//! 12.288 MHz, LRCK = MCK / 384 = 32 000 Hz exactly and SCK = 64 × LRCK =
+//! 2.048 MHz, inside the supported range of the common I2S MEMS microphones.
+//! 32 kHz is an LC3 rate, and one 10 ms LC3 frame is exactly one DMA block.
 
 use core::future::poll_fn;
 use core::sync::atomic::{Ordering, compiler_fence};
@@ -23,9 +24,12 @@ use embassy_nrf::pac::{self, shared::regs::Psel};
 use embassy_sync::waitqueue::AtomicWaker;
 
 /// LRCK frequency produced by the clock configuration below.
-pub const SAMPLE_RATE_HZ: u32 = 2_000_000 / 64;
-/// Stereo frames per DMA block (16.4 ms at 31.25 kHz).
-pub const FRAMES_PER_BLOCK: usize = 512;
+pub const SAMPLE_RATE_HZ: u32 = 32_000;
+/// Stereo frames per DMA block: 10 ms, one LC3 frame.
+pub const FRAMES_PER_BLOCK: usize = 320;
+/// HFCLKAUDIO.FREQUENCY for 12.288 MHz:
+/// f = 32 MHz × (4 + FREQ_VALUE / 2^16) / 12 (nRF5340 PS, CLOCK chapter).
+const HFCLKAUDIO_12_288_MHZ: u32 = 39_846;
 /// 32-bit words per DMA block: one per slot.
 const WORDS_PER_BLOCK: usize = FRAMES_PER_BLOCK * 2;
 /// Blocks in the DMA ring. With three, a completed block stays untouched for
@@ -99,18 +103,18 @@ impl<'d> I2sRx<'d> {
         lrck.set_as_output(OutputDrive::Standard);
         let mut sdin = Flex::new(sdin);
         sdin.set_as_input(Pull::Down);
+        start_audio_pll();
 
         let c = r.config();
         c.mode().write(|w| w.set_mode(vals::Mode::Master));
         c.rxen().write(|w| w.set_rxen(true));
         c.txen().write(|w| w.set_txen(false));
         c.clkconfig().write(|w| {
-            w.set_clksrc(vals::Clksrc::Pclk32m);
-            w.set_bypass(false);
+            w.set_clksrc(vals::Clksrc::Aclk);
+            w.set_bypass(true);
         });
         c.mcken().write(|w| w.set_mcken(true));
-        c.mckfreq().write(|w| w.set_mckfreq(vals::Mckfreq::_32mdiv16));
-        c.ratio().write(|w| w.set_ratio(vals::Ratio::_64x));
+        c.ratio().write(|w| w.set_ratio(vals::Ratio::_384x));
         c.swidth().write(|w| w.set_swidth(vals::Swidth::_32bit));
         c.align().write(|w| w.set_align(vals::Align::Left));
         c.format().write(|w| w.set_format(vals::Format::I2s));
@@ -200,6 +204,16 @@ impl Drop for I2sRx<'_> {
         psel.sdin().write_value(DISCONNECTED);
         compiler_fence(Ordering::SeqCst);
     }
+}
+
+/// Start HFCLKAUDIO at 12.288 MHz and wait until it is running.
+fn start_audio_pll() {
+    let clock = pac::CLOCK;
+    clock.hfclkaudio().frequency().write(|w| w.0 = HFCLKAUDIO_12_288_MHZ);
+    clock.events_hfclkaudiostarted().write_value(0);
+    clock.tasks_hfclkaudiostart().write_value(1);
+    while clock.events_hfclkaudiostarted().read() == 0 {}
+    clock.events_hfclkaudiostarted().write_value(0);
 }
 
 async fn wait_rxptrupd() {

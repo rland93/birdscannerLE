@@ -1,0 +1,7 @@
+[package]
+name = "bap"
+version = "0.1.0"
+edition = "2024"
+description = "LE Audio BAP Unicast Server (Source ASEs only) data/state logic: PACS and ASCS values, ASE Control Point state machine, advertising service data"
+
+[dependencies]

@@ -1,1 +1,15 @@
+# Cargo build output (firmware/ and mic-capture/)
 target/
+
+# Recordings from mic-capture
+*.wav
+
+# probe-rs crash reports (`probe-rs run --report`)
+*.probe-rs-report.zip
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store

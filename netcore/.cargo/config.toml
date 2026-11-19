@@ -1,0 +1,11 @@
+[target.thumbv8m.main-none-eabi]
+# Flashes the network core. Needs the full nRF5340 target (not _APPONLY) so
+# probe-rs can reach core 1; the app firmware must keep the net core released.
+runner = "probe-rs download --chip nRF5340_xxAA"
+
+[build]
+# Network core: Cortex-M33 without FPU.
+target = "thumbv8m.main-none-eabi"
+
+[env]
+DEFMT_LOG = "info"

@@ -4,17 +4,29 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+bap = { version = "0.1.0", path = "../crates/bap" }
+bt-hci = { version = "0.10", features = ["defmt"] }
 cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7"
 defmt = "1"
+embassy-embedded-hal = "0.6"
 embassy-executor = { version = "0.10", features = ["platform-cortex-m", "executor-thread", "defmt"] }
+embassy-futures = "0.1"
 embassy-nrf = { version = "0.11", features = ["nrf5340-app-s", "time-driver-rtc1", "gpiote", "defmt", "unstable-pac"] }
 embassy-sync = "0.8"
 embassy-time = { version = "0.5", features = ["defmt", "defmt-timestamp-uptime-ms"] }
+embedded-alloc = "0.7"
+embedded-io = "0.7"
+hci-shm = { version = "0.1.0", path = "../crates/hci-shm" }
+heapless = "0.9"
+lc3 = { version = "0.1.0", path = "../crates/lc3" }
 libm = "0.2"
 panic-probe = { version = "1", features = ["print-defmt"] }
 rtt-target = { version = "0.6", features = ["defmt"] }
+sequential-storage = { version = "8", default-features = false, features = ["postcard", "defmt"] }
+serde = { version = "1", default-features = false, features = ["derive"] }
 static_cell = "2"
+trouble-host = { version = "0.8", default-features = false, features = ["peripheral", "gatt", "derive", "security", "iso", "subrating", "serde", "defmt", "default-packet-pool", "default-packet-pool-mtu-255"] }
 
 [profile.release]
 debug = 2
@@ -24,3 +36,7 @@ opt-level = "s"
 
 [profile.dev]
 opt-level = 1
+
+# The LC3 encoder is the hot path; size-optimised code is several times slower.
+[profile.release.package.lc3]
+opt-level = 3

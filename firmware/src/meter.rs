@@ -4,7 +4,7 @@
 /// 8 bits; MEMS mics with fewer bits (e.g. 18-bit SPH0645) pad with zeros.
 const FULL_SCALE: f32 = 8_388_608.0;
 
-/// Pole of the DC blocker; puts the -3 dB corner at ~25 Hz for 31.25 kHz.
+/// Pole of the DC blocker; puts the -3 dB corner at ~25 Hz for 32 kHz.
 const DC_POLE: f32 = 0.995;
 
 /// Levels below this are reported as this (log of zero).

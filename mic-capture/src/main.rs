@@ -16,8 +16,8 @@ use probe_rs::rtt::{Rtt, ScanRegion};
 use probe_rs::{Permissions, Session};
 
 /// Must match the firmware (`i2s_rx::SAMPLE_RATE_HZ`, `FRAMES_PER_BLOCK`, PCM framing).
-const SAMPLE_RATE_HZ: u32 = 31_250;
-const SAMPLES_PER_FRAME: usize = 512;
+const SAMPLE_RATE_HZ: u32 = 32_000;
+const SAMPLES_PER_FRAME: usize = 320;
 const MAGIC: [u8; 2] = [0xA5, 0x5A];
 const FRAME_BYTES: usize = 4 + SAMPLES_PER_FRAME * 2;
 
@@ -116,7 +116,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-/// Reassembles `[A5 5A seq_lo seq_hi][512 × i16 LE]` frames from the byte stream.
+/// Reassembles `[A5 5A seq_lo seq_hi][SAMPLES_PER_FRAME × i16 LE]` frames from the byte stream.
 #[derive(Default)]
 struct FrameParser {
     pending: Vec<u8>,
