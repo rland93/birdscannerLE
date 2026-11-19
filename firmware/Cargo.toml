@@ -1,0 +1,26 @@
+[package]
+name = "nrf53bird"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
+cortex-m-rt = "0.7"
+defmt = "1"
+embassy-executor = { version = "0.10", features = ["platform-cortex-m", "executor-thread", "defmt"] }
+embassy-nrf = { version = "0.11", features = ["nrf5340-app-s", "time-driver-rtc1", "gpiote", "defmt", "unstable-pac"] }
+embassy-sync = "0.8"
+embassy-time = { version = "0.5", features = ["defmt", "defmt-timestamp-uptime-ms"] }
+libm = "0.2"
+panic-probe = { version = "1", features = ["print-defmt"] }
+rtt-target = { version = "0.6", features = ["defmt"] }
+static_cell = "2"
+
+[profile.release]
+debug = 2
+lto = true
+codegen-units = 1
+opt-level = "s"
+
+[profile.dev]
+opt-level = 1

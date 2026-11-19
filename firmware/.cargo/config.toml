@@ -1,0 +1,10 @@
+[target.thumbv8m.main-none-eabihf]
+# Channel 1 ("pcm") carries raw audio; only show the defmt log channel here.
+# Use the `mic-capture` host tool to record channel 1 to a WAV file.
+runner = "probe-rs run --chip nRF5340_xxAA_APPONLY --rtt-up-channels 0"
+
+[build]
+target = "thumbv8m.main-none-eabihf"
+
+[env]
+DEFMT_LOG = "info"
