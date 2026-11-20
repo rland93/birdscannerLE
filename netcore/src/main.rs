@@ -4,7 +4,6 @@
 #![no_std]
 #![no_main]
 
-mod dispatch;
 mod hci;
 
 use defmt::{info, unwrap};

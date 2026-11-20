@@ -1,0 +1,10 @@
+[target.thumbv7em-none-eabihf]
+# Flash over USB through the dongle's DFU bootloader (press its RESET button
+# first; red LED pulses). See ../README.md.
+runner = "./flash.sh"
+
+[build]
+target = "thumbv7em-none-eabihf"
+
+[env]
+DEFMT_LOG = "info"

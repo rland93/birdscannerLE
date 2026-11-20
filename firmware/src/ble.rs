@@ -1,10 +1,13 @@
-//! Bluetooth LE: connectable advertising, LE Secure Connections pairing and an
-//! LE Audio BAP Unicast Server with one Source ASE (the microphone).
+//! Bluetooth LE: connectable advertising, optional LE Secure Connections
+//! pairing (bonds kept in flash) and an LE Audio BAP Unicast Server with one
+//! Source ASE (the microphone).
 //!
 //! GATT: PACS (what we can capture), ASCS (stream setup state machine, logic
 //! in the `bap` crate) and an empty CAS (makes us a CAP Acceptor).
-//! All LE Audio characteristics require an encrypted link, so a client has to
-//! pair (Just Works) before it can configure a stream.
+//! The LE Audio characteristics do not require encryption: the nRF52840
+//! receiver dongle cannot encrypt isochronous channels, and a CIS created on
+//! an encrypted link must be encrypted. Clients that pair (e.g. BlueZ) still
+//! get an encrypted link and CIS.
 //!
 //! When the client enables the Source ASE it creates a CIS; we accept it, set
 //! up an HCI input data path, and once the client signals Receiver Start Ready
@@ -29,7 +32,12 @@ use trouble_host::IoCapabilities;
 
 use crate::audio::{self, StreamConfig};
 use crate::hci_link::{DISCONNECTIONS, ShmTransport};
-use crate::bonds::BondStore;
+
+/// Bonds live in the last 16 KiB of app-core flash (excluded in `memory.x`).
+pub const BOND_FLASH: core::ops::Range<u32> = 0x000F_C000..0x0010_0000;
+pub type BondStore = bond_store::BondStore<
+    embassy_embedded_hal::adapter::BlockingAsync<embassy_nrf::nvmc::Nvmc<'static>>,
+>;
 
 const DEVICE_NAME: &str = "nrf53bird";
 const CONNECTIONS_MAX: usize = 1;
@@ -53,22 +61,22 @@ pub struct Server {
 /// Published Audio Capabilities Service.
 #[gatt_service(uuid = "1850")]
 struct PacsService {
-    #[characteristic(uuid = "2bcb", read, permissions(encrypted))]
+    #[characteristic(uuid = "2bcb", read)]
     source_pac: Vec<u8, { bap::pacs::SOURCE_PAC_MAX_LEN }>,
-    #[characteristic(uuid = "2bcc", read, permissions(encrypted))]
+    #[characteristic(uuid = "2bcc", read)]
     source_audio_locations: [u8; 4],
-    #[characteristic(uuid = "2bcd", read, notify, permissions(encrypted))]
+    #[characteristic(uuid = "2bcd", read, notify)]
     available_audio_contexts: [u8; 4],
-    #[characteristic(uuid = "2bce", read, permissions(encrypted))]
+    #[characteristic(uuid = "2bce", read)]
     supported_audio_contexts: [u8; 4],
 }
 
 /// Audio Stream Control Service.
 #[gatt_service(uuid = "184e")]
 struct AscsService {
-    #[characteristic(uuid = "2bc5", read, notify, permissions(encrypted))]
+    #[characteristic(uuid = "2bc5", read, notify)]
     source_ase: Vec<u8, { ascs::ASE_VALUE_MAX_LEN }>,
-    #[characteristic(uuid = "2bc6", write, write_without_response, notify, permissions(encrypted))]
+    #[characteristic(uuid = "2bc6", write, write_without_response, notify)]
     control_point: Vec<u8, 128>,
 }
 

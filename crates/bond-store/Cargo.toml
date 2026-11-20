@@ -1,0 +1,12 @@
+[package]
+name = "bond-store"
+version = "0.1.0"
+edition = "2024"
+description = "Flash-backed trouble-host bond storage shared by the mic and the receiver dongle"
+
+[dependencies]
+defmt = "1"
+embedded-storage-async = "0.4"
+sequential-storage = { version = "8", default-features = false, features = ["postcard", "defmt"] }
+serde = { version = "1", default-features = false, features = ["derive"] }
+trouble-host = { version = "0.8", default-features = false, features = ["security", "serde", "defmt"] }

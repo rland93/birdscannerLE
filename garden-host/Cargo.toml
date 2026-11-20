@@ -1,0 +1,32 @@
+[package]
+name = "garden-host"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Desktop service for the nrf53bird garden mics: USB receiver dongle link, LC3 decoding, WAV recording and a local web UI"
+publish = false
+
+[dependencies]
+anyhow = "1.0.104"
+askama = "0.16.1"
+axum = { version = "0.8.9", features = ["ws"] }
+chrono = { version = "0.4.45", default-features = false, features = ["clock"] }
+clap = { version = "4.6.8", features = ["derive"] }
+directories = "6.0.0"
+futures-util = "0.3.34"
+garden-link = { version = "0.1.0", path = "../crates/garden-link" }
+hound = "3.5.1"
+lc3 = { version = "0.1.0", path = "../crates/lc3" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+serialport = "4.10.1"
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros", "sync", "time", "signal", "net"] }
+tower-http = { version = "0.7.1", features = ["fs"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[dev-dependencies]
+http-body-util = "0.1.5"
+tempfile = "3.27.0"
+tokio-tungstenite = "0.29"
+tower = { version = "0.5.3", features = ["util"] }

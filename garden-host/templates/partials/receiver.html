@@ -1,0 +1,30 @@
+<section id="receiver" class="flex flex-items-center flex-wrap flex-gap-12 bg-raised border border-subtle rounded-8 padding-x-20 padding-y-12" aria-live="polite">
+  {% if !receiver.connected %}
+  <i class="material-icons icon-24 text-orange-1" aria-hidden="true">usb_off</i>
+  <div class="grow-1 min-width-0">
+    <div class="font-weight-600 text-body-1 text-primary">Receiver not connected</div>
+    <div class="text-body-2 text-secondary">Plug in the USB receiver (USB ID {{ receiver.usb_id }}). Looking for it every 2 seconds.</div>
+    {% if !receiver.problem.is_empty() %}
+    <div class="text-body-3 text-muted margin-top-4">{{ receiver.problem }}</div>
+    {% endif %}
+  </div>
+  {% else if !receiver.answered %}
+  <i class="material-icons icon-24 text-amber-1" aria-hidden="true">hourglass_top</i>
+  <div class="grow-1 min-width-0">
+    <div class="font-weight-600 text-body-1 text-primary">Receiver found on {{ receiver.port }}</div>
+    <div class="text-body-2 text-secondary">Waiting for it to answer.</div>
+  </div>
+  {% else if !receiver.compatible %}
+  <i class="material-icons icon-24 text-red-1" aria-hidden="true">error</i>
+  <div class="grow-1 min-width-0">
+    <div class="font-weight-600 text-body-1 text-primary">Receiver on {{ receiver.port }} cannot be used</div>
+    <div class="text-body-2 text-secondary">{{ receiver.problem }}</div>
+  </div>
+  {% else %}
+  <i class="material-icons icon-24 text-green-1" aria-hidden="true">usb</i>
+  <div class="grow-1 min-width-0">
+    <div class="font-weight-600 text-body-1 text-primary">Receiver connected on {{ receiver.port }}</div>
+    <div class="text-body-2 text-secondary">Firmware {{ receiver.firmware }} · protocol {{ receiver.protocol }} · up to {{ receiver.max_mics }} mics</div>
+  </div>
+  {% endif %}
+</section>

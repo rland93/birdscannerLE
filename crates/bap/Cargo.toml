@@ -2,6 +2,6 @@
 name = "bap"
 version = "0.1.0"
 edition = "2024"
-description = "LE Audio BAP Unicast Server (Source ASEs only) data/state logic: PACS and ASCS values, ASE Control Point state machine, advertising service data"
+description = "LE Audio BAP unicast data/state logic for Source ASEs: server side (PACS and ASCS values, ASE Control Point state machine, advertising service data) and client side (PAC/ASE parsers, Control Point PDU builders, codec/QoS choice)"
 
 [dependencies]

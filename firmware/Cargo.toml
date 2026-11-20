@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 bap = { version = "0.1.0", path = "../crates/bap" }
+bond-store = { version = "0.1.0", path = "../crates/bond-store" }
 bt-hci = { version = "0.10", features = ["defmt"] }
 cortex-m = { version = "0.7.7", features = ["inline-asm", "critical-section-single-core"] }
 cortex-m-rt = "0.7"
@@ -23,8 +24,6 @@ lc3 = { version = "0.1.0", path = "../crates/lc3" }
 libm = "0.2"
 panic-probe = { version = "1", features = ["print-defmt"] }
 rtt-target = { version = "0.6", features = ["defmt"] }
-sequential-storage = { version = "8", default-features = false, features = ["postcard", "defmt"] }
-serde = { version = "1", default-features = false, features = ["derive"] }
 static_cell = "2"
 trouble-host = { version = "0.8", default-features = false, features = ["peripheral", "gatt", "derive", "security", "iso", "subrating", "serde", "defmt", "default-packet-pool", "default-packet-pool-mtu-255"] }
 

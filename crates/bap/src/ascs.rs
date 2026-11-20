@@ -23,7 +23,8 @@
 //!
 //! All multi-octet fields are little-endian.
 
-use crate::{ltv, pacs};
+use crate::wire::{Writer, le16, le24};
+use crate::{codec_config, ltv, pacs};
 
 /// Maximum number of Source ASEs (`N`) supported by [`Ascs`]. Bounded so that one call
 /// never produces more than [`MAX_ACTIONS`] actions (at most two per ASE).
@@ -128,18 +129,9 @@ pub mod reason {
     pub const INVALID_ASE_CIS_MAPPING: u8 = 0x0A;
 }
 
-/// Codec_Specific_Configuration LTV types (Assigned Numbers, Generic Audio).
-mod cc_type {
-    pub const SAMPLING_FREQUENCY: u8 = 0x01;
-    pub const FRAME_DURATION: u8 = 0x02;
-    pub const AUDIO_CHANNEL_ALLOCATION: u8 = 0x03;
-    pub const OCTETS_PER_CODEC_FRAME: u8 = 0x04;
-    pub const CODEC_FRAME_BLOCKS_PER_SDU: u8 = 0x05;
-}
-
 /// Metadata LTV types (Assigned Numbers, Generic Audio) validated by this server; any
 /// other type is accepted and stored verbatim.
-mod metadata_type {
+pub(crate) mod metadata_type {
     pub const PREFERRED_AUDIO_CONTEXTS: u8 = 0x01;
     pub const STREAMING_AUDIO_CONTEXTS: u8 = 0x02;
 }
@@ -391,7 +383,7 @@ impl<const N: usize> Ascs<N> {
             return 0;
         };
         let ase = &self.ases[i];
-        let mut w = Writer { buf: out, pos: 0 };
+        let mut w = Writer::new(out);
         w.u8(ase_id);
         w.u8(ase.state as u8);
         match ase.state {
@@ -456,7 +448,7 @@ impl<const N: usize> Ascs<N> {
             return op_error(rsp, op, INVALID_LENGTH);
         }
 
-        let mut w = Writer { buf: rsp, pos: 0 };
+        let mut w = Writer::new(rsp);
         w.u8(op);
         w.u8(num);
         for _ in 0..num {
@@ -896,72 +888,30 @@ fn parse_codec_config(cc: &[u8]) -> Result<CodecConfig, u8> {
     const INVALID: u8 = INVALID_CONFIGURATION_PARAMETER_VALUE;
     const UNSUPPORTED: u8 = UNSUPPORTED_CONFIGURATION_PARAMETER_VALUE;
 
-    let mut sampling = None;
-    let mut duration = None;
-    let mut allocation = 0u32;
-    let mut octets = None;
-    let mut blocks = 1u8;
-    for item in ltv::iter(cc) {
-        let (ty, v) = item.map_err(|_| INVALID)?;
-        match ty {
-            cc_type::SAMPLING_FREQUENCY => sampling = Some(*one(v).ok_or(INVALID)?),
-            cc_type::FRAME_DURATION => duration = Some(*one(v).ok_or(INVALID)?),
-            cc_type::AUDIO_CHANNEL_ALLOCATION => {
-                let v: [u8; 4] = v.try_into().map_err(|_| INVALID)?;
-                allocation = u32::from_le_bytes(v);
-            }
-            cc_type::OCTETS_PER_CODEC_FRAME => {
-                let v: [u8; 2] = v.try_into().map_err(|_| INVALID)?;
-                octets = Some(u16::from_le_bytes(v));
-            }
-            cc_type::CODEC_FRAME_BLOCKS_PER_SDU => blocks = *one(v).ok_or(INVALID)?,
-            // Unknown types are ignored for forward compatibility.
-            _ => {}
-        }
+    // Malformed LTVs, missing mandatory LTVs (BAP v1.0 §4.3.2) and undefined
+    // Sampling_Frequency / Frame_Duration codes are invalid.
+    let codec = codec_config::decode(cc).map_err(|_| INVALID)?;
+    if !pacs::SAMPLING_FREQUENCIES_HZ.contains(&codec.sampling_hz)
+        || codec.frame_duration_us != pacs::FRAME_DURATION_US
+    {
+        return Err(UNSUPPORTED);
     }
-    // Sampling_Frequency, Frame_Duration and Octets_Per_Codec_Frame are mandatory
-    // (BAP v1.0 §4.3.2); the other two have defaults (mono / one block).
-    let (Some(sampling), Some(duration), Some(octets)) = (sampling, duration, octets) else {
-        return Err(INVALID);
-    };
-
-    // Sampling_Frequency codes (Assigned Numbers): 0x01 8 kHz, 0x02 11.025, 0x03 16,
-    // 0x04 22.05, 0x05 24, 0x06 32, 0x07 44.1, 0x08 48, 0x09 88.2, 0x0A 96,
-    // 0x0B 176.4, 0x0C 192, 0x0D 384 kHz.
-    let sampling_hz = match sampling {
-        0x03 => 16_000,
-        0x05 => 24_000,
-        0x06 => 32_000,
-        0x01..=0x0D => return Err(UNSUPPORTED),
-        _ => return Err(INVALID),
-    };
-    // Frame_Duration: 0x00 7.5 ms, 0x01 10 ms.
-    let frame_duration_us = match duration {
-        0x01 => pacs::FRAME_DURATION_US,
-        0x00 => return Err(UNSUPPORTED),
-        _ => return Err(INVALID),
-    };
     // Only exposed Source Audio Locations; with a single location bit this also caps
     // the channel count at 1.
-    if allocation & !pacs::SOURCE_AUDIO_LOCATIONS != 0 {
+    if codec.audio_locations & !pacs::SOURCE_AUDIO_LOCATIONS != 0 {
         return Err(UNSUPPORTED);
     }
-    if !(pacs::MIN_OCTETS_PER_FRAME..=pacs::MAX_OCTETS_PER_FRAME).contains(&octets) {
+    if !(pacs::MIN_OCTETS_PER_FRAME..=pacs::MAX_OCTETS_PER_FRAME).contains(&codec.octets_per_frame)
+    {
         return Err(UNSUPPORTED);
     }
-    if blocks == 0 {
+    if codec.frames_per_sdu == 0 {
         return Err(INVALID);
     }
-    if blocks > pacs::MAX_FRAMES_PER_SDU {
+    if codec.frames_per_sdu > pacs::MAX_FRAMES_PER_SDU {
         return Err(UNSUPPORTED);
     }
-    Ok(CodecConfig {
-        sampling_hz,
-        frame_duration_us,
-        octets_per_frame: octets,
-        frames_per_sdu: blocks,
-        audio_locations: allocation,
-    })
+    Ok(codec)
 }
 
 /// Validates Enable/Update Metadata LTVs (ASCS v1.0.1 Table 5.1: Reason = Metadata
@@ -988,45 +938,4 @@ fn validate_metadata(md: &[u8]) -> Result<(), Rsp> {
         }
     }
     Ok(())
-}
-
-fn one(v: &[u8]) -> Option<&u8> {
-    match v {
-        [b] => Some(b),
-        _ => None,
-    }
-}
-
-fn le16(b: &[u8]) -> u16 {
-    u16::from_le_bytes([b[0], b[1]])
-}
-
-fn le24(b: &[u8]) -> u32 {
-    u32::from_le_bytes([b[0], b[1], b[2], 0])
-}
-
-/// Sequential writer that panics (slice index) when the buffer is too small.
-struct Writer<'a> {
-    buf: &'a mut [u8],
-    pos: usize,
-}
-
-impl Writer<'_> {
-    fn u8(&mut self, v: u8) {
-        self.buf[self.pos] = v;
-        self.pos += 1;
-    }
-
-    fn bytes(&mut self, v: &[u8]) {
-        self.buf[self.pos..self.pos + v.len()].copy_from_slice(v);
-        self.pos += v.len();
-    }
-
-    fn le16(&mut self, v: u16) {
-        self.bytes(&v.to_le_bytes());
-    }
-
-    fn le24(&mut self, v: u32) {
-        self.bytes(&v.to_le_bytes()[..3]);
-    }
 }

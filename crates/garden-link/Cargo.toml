@@ -1,0 +1,13 @@
+[package]
+name = "garden-link"
+version = "0.1.0"
+edition = "2024"
+description = "USB protocol between the nRF52840 receiver dongle and the host application"
+
+[dependencies]
+postcard = { version = "1.1", default-features = false }
+serde = { version = "1", default-features = false, features = ["derive"] }
+defmt = { version = "1", optional = true }
+
+[features]
+defmt = ["dep:defmt"]

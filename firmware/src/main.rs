@@ -23,7 +23,6 @@ extern crate alloc;
 
 mod audio;
 mod ble;
-mod bonds;
 mod hci_link;
 mod i2s_rx;
 mod meter;
@@ -80,7 +79,11 @@ async fn main(spawner: Spawner) {
     full_speed_cpu();
 
     let transport = hci_link::start_netcore(Irqs);
-    ble::start(spawner, transport, bonds::BondStore::new(p.NVMC));
+    let bonds = ble::BondStore::new(
+        embassy_embedded_hal::adapter::BlockingAsync::new(embassy_nrf::nvmc::Nvmc::new(p.NVMC)),
+        ble::BOND_FLASH,
+    );
+    ble::start(spawner, transport, bonds);
 
     let leds = [
         Output::new(p.P0_28, Level::High, OutputDrive::Standard),

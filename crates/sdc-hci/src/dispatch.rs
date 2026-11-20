@@ -13,7 +13,7 @@
 
 use nrf_sdc::raw;
 
-use crate::hci::{Done, call_n, call_p, call_pr, call_r};
+use crate::{Done, call_n, call_p, call_pr, call_r};
 
 /// Run `opcode` with wire-format `params`; return values are written to `ret`.
 /// `None` for opcodes the controller does not implement.

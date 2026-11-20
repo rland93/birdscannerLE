@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Add microphone{% endblock %}
+{% block content %}
+<div class="container-960">
+  <h1 class="h4 font-weight-700 margin-bottom-8">Add a microphone</h1>
+  <p class="text-body-2 text-secondary margin-bottom-24">The receiver scans while this page is open. Pick a microphone to add it; it is connected again automatically from then on. The audio link is not encrypted.</p>
+  <div class="margin-bottom-16">
+    {% include "partials/receiver.html" %}
+  </div>
+  {% include "partials/adverts.html" %}
+</div>
+{% endblock %}

@@ -17,6 +17,7 @@ hci-shm = { path = "../crates/hci-shm" }
 nrf-mpsl = { version = "0.4", features = ["nrf5340-net", "critical-section-impl", "defmt"] }
 nrf-sdc = { version = "0.4", features = ["nrf5340-net", "multirole", "defmt"] }
 panic-probe = { version = "1", features = ["print-defmt"] }
+sdc-hci = { version = "0.1.0", path = "../crates/sdc-hci" }
 static_cell = "2"
 
 [profile.release]

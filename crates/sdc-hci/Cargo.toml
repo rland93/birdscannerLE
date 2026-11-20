@@ -1,0 +1,13 @@
+[package]
+name = "sdc-hci"
+version = "0.1.0"
+edition = "2024"
+description = "Raw HCI command dispatch and packet fetch for Nordic's SoftDevice Controller"
+
+# The chip is chosen by the firmware through nrf-sdc's own feature
+# (e.g. `nrf-sdc/nrf5340-net`, `nrf-sdc/nrf52840`); this crate only builds
+# inside such a firmware.
+[dependencies]
+defmt = "1"
+hci-shm = { path = "../hci-shm" }
+nrf-sdc = { version = "0.4", default-features = false }

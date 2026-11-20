@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" class="scrollbar-thin">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} · Garden mics</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@alloyhtml/css@1/dist/alloy.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@alloyhtml/css@1/dist/themes/dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="/static/app.js" defer></script>
+</head>
+<body class="bg-base text-primary" data-page="{{ page }}">
+  <header class="bg-raised border-bottom border-subtle">
+    <div class="container-1320 flex flex-items-center flex-wrap flex-gap-24 flex-gap-12-sm padding-y-12">
+      <a href="/" class="a a-color-reset flex flex-items-center flex-gap-8 text-primary">
+        <i class="material-icons icon-24 text-green-1" aria-hidden="true">yard</i>
+        <span class="h6 font-weight-700">Garden mics</span>
+      </a>
+      <nav class="flex flex-wrap flex-gap-20 flex-gap-12-sm text-body-2 font-weight-600" aria-label="Main">
+        {% if page == "dashboard" %}
+        <a href="/" class="a text-primary-1" aria-current="page">Dashboard</a>
+        {% else %}
+        <a href="/" class="a text-secondary hover-text-primary">Dashboard</a>
+        {% endif %}
+        {% if page == "add" %}
+        <a href="/add" class="a text-primary-1" aria-current="page">Add microphone</a>
+        {% else %}
+        <a href="/add" class="a text-secondary hover-text-primary">Add microphone</a>
+        {% endif %}
+        {% if page == "recordings" %}
+        <a href="/recordings" class="a text-primary-1" aria-current="page">Recordings</a>
+        {% else %}
+        <a href="/recordings" class="a text-secondary hover-text-primary">Recordings</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <main class="container-1320 padding-y-24">
+    {% block content %}{% endblock %}
+  </main>
+  <div id="audio-warning" class="fixed bottom-0 left-0 right-0 z-5" hidden>
+    <div class="flex flex-justify-center padding-16">
+      <div class="flex flex-items-center flex-gap-8 bg-raised border border-subtle rounded-8 padding-x-16 padding-y-12 text-body-2 text-primary shadow-2" role="status">
+        <i class="material-icons icon-20 text-orange-1" aria-hidden="true">volume_off</i>
+        <span></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

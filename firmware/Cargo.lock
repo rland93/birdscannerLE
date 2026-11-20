@@ -90,6 +90,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bond-store"
+version = "0.1.0"
+dependencies = [
+ "defmt 1.2.0",
+ "embedded-storage-async",
+ "sequential-storage",
+ "serde",
+ "trouble-host",
+]
+
+[[package]]
 name = "bt-hci"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1073,6 +1084,7 @@ name = "nrf53bird"
 version = "0.1.0"
 dependencies = [
  "bap",
+ "bond-store",
  "bt-hci",
  "cortex-m",
  "cortex-m-rt",
@@ -1091,8 +1103,6 @@ dependencies = [
  "libm",
  "panic-probe",
  "rtt-target",
- "sequential-storage",
- "serde",
  "static_cell",
  "trouble-host",
 ]

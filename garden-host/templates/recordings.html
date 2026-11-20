@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Recordings{% endblock %}
+{% block content %}
+<div class="flex flex-items-center flex-justify-between flex-wrap flex-gap-12 margin-bottom-8">
+  <h1 class="h4 font-weight-700">Recordings</h1>
+</div>
+<p class="text-body-2 text-secondary margin-bottom-24">WAV files in <code>{{ root }}</code>, one per hour of recording.</p>
+
+{% if folders.is_empty() %}
+<div class="flex flex-column flex-items-center flex-gap-8 bg-surface rounded-8 padding-40 text-center">
+  <i class="material-icons icon-48 text-muted" aria-hidden="true">library_music</i>
+  <div class="h6 font-weight-600">No recordings yet</div>
+  <div class="text-body-2 text-secondary">Turn on Record for a microphone on the dashboard.</div>
+</div>
+{% else %}
+{% for folder in folders %}
+<section class="margin-bottom-32">
+  <h2 class="h5 font-weight-600 flex flex-items-center flex-gap-8 margin-bottom-12"><i class="material-icons icon-24 text-primary-1" aria-hidden="true">mic</i>{{ folder.name }}</h2>
+  {% for day in folder.days %}
+  <details class="bg-raised border border-subtle rounded-8 margin-bottom-8" {% if loop.first %}open{% endif %}>
+    <summary class="flex flex-items-center flex-justify-between padding-12">
+      <span class="text-body-2 font-weight-600 text-primary">{{ day.date }} · {{ day.files.len() }} file(s)</span>
+      <i class="icon-20 material-icons text-secondary rotate-when-open" aria-hidden="true">expand_more</i>
+    </summary>
+    <div class="padding-x-12 padding-bottom-12">
+      <table class="table table-compact table-stack-sm" role="table" aria-label="Recordings of {{ folder.name }} on {{ day.date }}">
+        <thead role="rowgroup">
+          <tr role="row">
+            <th role="columnheader" class="th-shrink">Start</th>
+            <th role="columnheader" class="th-shrink">Length</th>
+            <th role="columnheader" class="th-shrink">Size</th>
+            <th role="columnheader">Play</th>
+            <th role="columnheader" class="th-shrink"><span class="visually-hidden">Download</span></th>
+          </tr>
+        </thead>
+        <tbody role="rowgroup">
+          {% for f in day.files %}
+          <tr role="row">
+            <td role="cell" class="equal text-nowrap font-weight-600">
+              {{ f.name }}
+              {% if f.live %}
+              <span class="inline-flex flex-items-center flex-justify-center text-nowrap height-24px padding-x-8 rounded-4 text-body-4 font-weight-600 text-uppercase letter-spacing-1 bg-red-1 text-white margin-left-8">Recording</span>
+              {% endif %}
+            </td>
+            <td role="cell" data-label="Length" class="text-nowrap">{{ f.duration }}</td>
+            <td role="cell" data-label="Size" class="text-nowrap">{{ f.size }}</td>
+            <td role="cell" data-label="Play"><audio controls preload="none" src="{{ f.url }}" class="block width-100"></audio></td>
+            <td role="cell" data-label="Download"><a href="{{ f.url }}" download class="a flex flex-items-center flex-gap-4 text-nowrap"><i class="material-icons icon-20" aria-hidden="true">download</i>Download</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {% endfor %}
+</section>
+{% endfor %}
+{% endif %}
+{% endblock %}
