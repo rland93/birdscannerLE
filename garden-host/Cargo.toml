@@ -3,7 +3,7 @@ name = "garden-host"
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
-description = "Desktop service for the nrf53bird garden mics: USB receiver dongle link, LC3 decoding, WAV recording and a local web UI"
+description = "Desktop service for the birdscannerLE garden mics: USB receiver dongle link, LC3 decoding, WAV recording and a local web UI"
 publish = false
 
 [dependencies]

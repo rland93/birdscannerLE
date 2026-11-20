@@ -28,7 +28,7 @@ impl Paths {
     /// and `~/.local/share/garden-host` on Linux, `%APPDATA%` on Windows,
     /// `~/Library/Application Support` on macOS).
     pub fn platform() -> anyhow::Result<Paths> {
-        let dirs = directories::ProjectDirs::from("org", "nrf53bird", "garden-host")
+        let dirs = directories::ProjectDirs::from("org", "birdscannerLE", "garden-host")
             .ok_or_else(|| anyhow::anyhow!("no home directory; pass --data-dir"))?;
         Ok(Paths {
             config_file: dirs.config_dir().join("config.json"),

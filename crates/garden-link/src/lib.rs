@@ -23,7 +23,7 @@ pub const PROTOCOL_VERSION: u16 = 2;
 /// USB IDs of the dongle: pid.codes open-source VID with its test PID.
 pub const USB_VID: u16 = 0x1209;
 pub const USB_PID: u16 = 0x0001;
-pub const USB_PRODUCT: &str = "nrf53bird receiver";
+pub const USB_PRODUCT: &str = "birdscannerLE receiver";
 
 /// Upper bound of one encoded frame (COBS overhead and the 0x00 included).
 /// Sized for an [`DongleToHost::Audio`] frame of up to 155 LC3 bytes.

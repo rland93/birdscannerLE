@@ -1,4 +1,4 @@
-//! Record the microphone PCM stream that the nrf53bird firmware publishes on
+//! Record the microphone PCM stream that the birdscannerLE firmware publishes on
 //! RTT up channel "pcm" and write it to a WAV file.
 //!
 //! The firmware must already be running; this attaches without resetting or
@@ -22,7 +22,7 @@ const MAGIC: [u8; 2] = [0xA5, 0x5A];
 const FRAME_BYTES: usize = 4 + SAMPLES_PER_FRAME * 2;
 
 #[derive(Parser)]
-#[command(about = "Capture nrf53bird microphone audio over RTT into a WAV file")]
+#[command(about = "Capture birdscannerLE microphone audio over RTT into a WAV file")]
 struct Args {
     /// Output WAV file.
     output: PathBuf,

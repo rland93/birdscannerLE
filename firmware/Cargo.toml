@@ -1,7 +1,11 @@
 [package]
-name = "nrf53bird"
+name = "birdscannerLE"
 version = "0.1.0"
 edition = "2024"
+
+[lints.cargo]
+# The product name is birdscannerLE; the binary inherits it deliberately.
+non_kebab_case_bins = "allow"
 
 [dependencies]
 bap = { version = "0.1.0", path = "../crates/bap" }

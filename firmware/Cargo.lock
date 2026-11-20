@@ -63,6 +63,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c7f02d4ea65f2c1853089ffd8d2787bdbc63de2f0d29dedbcf8ccdfa0ccd4cf"
 
 [[package]]
+name = "birdscannerLE"
+version = "0.1.0"
+dependencies = [
+ "bap",
+ "bond-store",
+ "bt-hci",
+ "cortex-m",
+ "cortex-m-rt",
+ "defmt 1.2.0",
+ "embassy-embedded-hal",
+ "embassy-executor",
+ "embassy-futures",
+ "embassy-nrf",
+ "embassy-sync",
+ "embassy-time",
+ "embedded-alloc",
+ "embedded-io 0.7.1",
+ "hci-shm",
+ "heapless 0.9.4",
+ "lc3",
+ "libm",
+ "panic-probe",
+ "rtt-target",
+ "static_cell",
+ "trouble-host",
+]
+
+[[package]]
 name = "bitfield"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1077,34 +1105,6 @@ checksum = "83531b9f1e19f493018da9b8b20359e4cedd6d1357553b1ac50f3fa27a0104fa"
 dependencies = [
  "cortex-m",
  "cortex-m-rt",
-]
-
-[[package]]
-name = "nrf53bird"
-version = "0.1.0"
-dependencies = [
- "bap",
- "bond-store",
- "bt-hci",
- "cortex-m",
- "cortex-m-rt",
- "defmt 1.2.0",
- "embassy-embedded-hal",
- "embassy-executor",
- "embassy-futures",
- "embassy-nrf",
- "embassy-sync",
- "embassy-time",
- "embedded-alloc",
- "embedded-io 0.7.1",
- "hci-shm",
- "heapless 0.9.4",
- "lc3",
- "libm",
- "panic-probe",
- "rtt-target",
- "static_cell",
- "trouble-host",
 ]
 
 [[package]]

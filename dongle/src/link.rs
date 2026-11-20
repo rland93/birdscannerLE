@@ -61,7 +61,7 @@ pub async fn run(usbd: Peri<'static, peripherals::USBD>) -> ! {
     let driver = Driver::new(usbd, Irqs, &*vbus);
 
     let mut config = Config::new(garden_link::USB_VID, garden_link::USB_PID);
-    config.manufacturer = Some("nrf53bird");
+    config.manufacturer = Some("birdscannerLE");
     config.product = Some(garden_link::USB_PRODUCT);
     config.serial_number = Some(serial_number());
     config.max_power = 100;

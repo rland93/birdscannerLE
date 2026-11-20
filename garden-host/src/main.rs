@@ -8,7 +8,7 @@ use garden_host::engine::Engine;
 use garden_host::{link, web};
 use tracing_subscriber::EnvFilter;
 
-/// The audio interface for the nrf53bird garden microphones: connects to the
+/// The audio interface for the birdscannerLE garden microphones: connects to the
 /// USB receiver dongle and serves a web UI to listen, record and manage mics.
 #[derive(Parser, Debug)]
 #[command(version)]

@@ -39,7 +39,7 @@ pub type BondStore = bond_store::BondStore<
     embassy_embedded_hal::adapter::BlockingAsync<embassy_nrf::nvmc::Nvmc<'static>>,
 >;
 
-const DEVICE_NAME: &str = "nrf53bird";
+const DEVICE_NAME: &str = "birdscannerLE";
 const CONNECTIONS_MAX: usize = 1;
 /// Signalling + ATT.
 const L2CAP_CHANNELS_MAX: usize = 2;

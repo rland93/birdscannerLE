@@ -1,4 +1,4 @@
-# nrf53bird
+# birdscannerLE
 
 Garden microphones over Bluetooth LE Audio.
 
@@ -75,7 +75,7 @@ LED1..LED4: VU meter, block peak >= -50/-40/-30/-20 dBFS.
 
 ### LE Audio
 
-- Advertises as `nrf53bird` (appearance: Microphone) with ASCS and CAS
+- Advertises as `birdscannerLE` (appearance: Microphone) with ASCS and CAS
   service data. Legacy connectable advertising, name in the scan response.
 - PACS: LC3, 16/24/32 kHz, 10 ms frames, 26..80 octets/frame, 1 channel,
   Front Left. Source contexts: Unspecified, Conversational, Media, Game,
@@ -101,7 +101,7 @@ cd dongle && cargo run --release      # builds and flashes via ./flash.sh (nrfut
 ```
 
 Needs `nrfutil` with `nrf5sdk-tools` (`nrfutil install nrf5sdk-tools`). The
-dongle enumerates as `1209:0001` "nrf53bird receiver" (a CDC-ACM serial port,
+dongle enumerates as `1209:0001` "birdscannerLE receiver" (a CDC-ACM serial port,
 driverless on all three OSes). It scans for ASCS adverts, connects mics on
 request, configures each Source ASE (one CIG per mic) and forwards LC3 frames
 with their ISO sequence numbers; lost frames are sent empty.
@@ -142,18 +142,18 @@ Experimental = true
 KernelExperimental = 6fbaf188-05e0-496a-9885-d6ddfdb4e03e
 sudo systemctl restart bluetooth
 
-# ~/.config/wireplumber/wireplumber.conf.d/90-nrf53bird-bap.conf
+# ~/.config/wireplumber/wireplumber.conf.d/90-birdscannerLE-bap.conf
 monitor.bluez.properties = {
   bluez5.roles = [ a2dp_sink a2dp_source bap_sink bap_source hsp_hs hsp_ag hfp_hf hfp_ag ]
 }
 systemctl --user restart pipewire wireplumber
 ```
 
-Then connect (`bluetoothctl connect <addr>`); `nrf53bird` appears as a
+Then connect (`bluetoothctl connect <addr>`); `birdscannerLE` appears as a
 PipeWire source:
 
 ```sh
-pw-record --target nrf53bird --rate 32000 --channels 1 out.wav
+pw-record --target birdscannerLE --rate 32000 --channels 1 out.wav
 ```
 
 The mic takes one connection at a time: disconnect the PC before using the

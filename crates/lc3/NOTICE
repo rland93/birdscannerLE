@@ -4,7 +4,7 @@ This product includes software derived from liblc3 (https://github.com/google/li
   Copyright 2022 Google LLC
   Licensed under the Apache License, Version 2.0.
 
-This copy is a modified no_std port of lc3 0.1.0 (crates.io, Apache-2.0) for the nrf53bird
+This copy is a modified no_std port of lc3 0.1.0 (crates.io, Apache-2.0) for the birdscannerLE
 firmware: `#![no_std]` + `alloc`, `libm` for sqrtf/truncf/floorf, the x86-64 SSE2 kernels
 (src/simd.rs) removed in favour of their portable paths, on-stack MDCT buffers sized for 480
 samples instead of 960.

@@ -1,7 +1,7 @@
 # lc3 (no_std port)
 
 **This is a modified no_std port of [lc3 0.1.0](https://crates.io/crates/lc3)** for the
-nrf53bird firmware: `#![no_std]` with `alloc`, `sqrtf`/`truncf`/`floorf` from `libm` (exact
+birdscannerLE firmware: `#![no_std]` with `alloc`, `sqrtf`/`truncf`/`floorf` from `libm` (exact
 operations, so results are unchanged), the x86-64 SSE2 kernels (`src/simd.rs`) removed in
 favour of their portable bodies, and the on-stack MDCT buffers sized for 480 samples (the
 largest frame accepted, 10 ms at 48 kHz) instead of 960. `tests/upstream.rs` checks the encoder

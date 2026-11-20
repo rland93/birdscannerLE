@@ -1,4 +1,4 @@
-//! nRF52840 Dongle: LE Audio unicast client for the nrf53bird garden mics.
+//! nRF52840 Dongle: LE Audio unicast client for the birdscannerLE garden mics.
 //!
 //! The SoftDevice Controller and trouble-host run on this chip; mics are
 //! connected, paired and streamed on request from the host application, and
@@ -55,7 +55,7 @@ async fn main(spawner: Spawner) {
     // Calibrated RC: works whether or not a 32.768 kHz crystal is fitted.
     config.lfclk_source = config::LfclkSource::InternalRC;
     let p = embassy_nrf::init(config);
-    info!("nrf53bird receiver dongle starting");
+    info!("birdscannerLE receiver dongle starting");
 
     let mpsl_p = mpsl::Peripherals::new(p.RTC0, p.TIMER0, p.TEMP, p.PPI_CH19, p.PPI_CH30, p.PPI_CH31);
     let lfclk_cfg = mpsl::raw::mpsl_clock_lfclk_cfg_t {
